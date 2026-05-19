@@ -95,7 +95,7 @@ function renderWeekDetails(week) {
   weekDescription.textContent =
     week.description;
   weekLinksList.innerHTML = '';
-  week.links.forEach(function(url) {
+  (week.links || []).forEach(function(url) {
     const li = document.createElement('li');
     const a = document.createElement('a');
     a.href = url;

@@ -79,7 +79,7 @@ async function loadWeeks() {
   const response = await fetch('./api/index.php');
   const result = await response.json();
   weekListSection.innerHTML = '';
-  result.data.forEach(function(week) {
+  (result.data || []).forEach(function(week) {
     const article = createWeekArticle(week);
     weekListSection.appendChild(article);
   });

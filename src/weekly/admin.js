@@ -82,7 +82,7 @@ function createWeekRow(week) {
 function renderTable() {
   // ... your implementation here ...
   weeksTbody.innerHTML = "";
-  weeks.forEach(function(week) {
+  (weeks || []).forEach(function(week) {
     const row = createWeekRow(week);
     weeksTbody.appendChild(row);
   });
@@ -291,7 +291,7 @@ async function loadAndInitialize() {
   const response = await fetch('./api/index.php');
   const result = await response.json();
   if (result.success === true) {
-    weeks = result.data;
+    weeks = result.data || [];
     renderTable();
   }
   weekForm.addEventListener('submit', handleAddWeek);
