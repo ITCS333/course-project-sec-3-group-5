@@ -131,18 +131,16 @@ function getAllWeeks(PDO $db): void
     // TODO: Build the base SELECT query.
     // SELECT id, title, start_date, description, links, created_at FROM weeks
     $sql = "SELECT id, title, start_date, description, links, created_at FROM weeks";
-    $stmt = $db->prepare($sql);
+   
 
     // TODO: If $_GET['search'] is provided and non-empty, append:
     // WHERE title LIKE :search OR description LIKE :search
     // Bind '%' . $search . '%' to :search.
     if (isset($_GET['search']) && !empty($_GET['search'])) {
-    $stmt->bindValue(':search', '%' . $search . '%');}
-    $stmt->execute();
-    $weeks = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    foreach ($weeks as &$week) {
-    $week['links'] = json_decode($week['links'], true) ?? [];}
-    sendResponse(['success' => true,'data' => $weeks]);
+        $search = $_GET['search'];
+        $sql .= " WHERE title LIKE :search
+                  OR description LIKE :search";
+}
 
     // TODO: Validate $_GET['sort'] against the whitelist [title, start_date].
     // Default to 'start_date' if missing or invalid.
@@ -159,16 +157,26 @@ function getAllWeeks(PDO $db): void
     $order = 'asc';}
 
     // TODO: Append ORDER BY {sort} {order} to the query.
-    
+    $sql .= " ORDER BY $sort $order";
 
     // TODO: Prepare, bind (if searching), and execute the statement.
+    $stmt = $db->prepare($sql);
+    if (isset($search)) {
+        $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+    }
+    $stmt->execute();
 
     // TODO: Fetch all rows as an associative array.
+    $weeks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // TODO: For each row, decode the links column:
     // $row['links'] = json_decode($row['links'], true) ?? [];
+    foreach ($weeks as &$week) {
+        $week['links'] = json_decode($week['links'], true) ?? [];
+    }
 
     // TODO: Call sendResponse(['success' => true, 'data' => $weeks]);
+    sendResponse(['success' => true, 'data' => $weeks]);
 }
 
 
@@ -253,13 +261,16 @@ function createWeek(PDO $db, array $data): void
     // TODO: INSERT INTO weeks (title, start_date, description, links)
     //       VALUES (?, ?, ?, ?)
     // Note: id, created_at, and updated_at are handled by MySQL automatically.
+    $sql = "INSERT INTO weeks
+    (title, start_date, description, links)
+    VALUES (?, ?, ?, ?)";
     $stmt = $db->prepare($sql);
     $stmt->execute([ $title, $start_date, $description, $links]);
 
     // TODO: If rowCount() > 0, sendResponse HTTP 201 with the new id.
     // Otherwise sendResponse HTTP 500.
     if ($stmt->rowCount() > 0) {
-        sendResponse(['success' => true, 'data' => ['id' => $db->lastInsertId()]], 'Week created successfully', 201 );
+        sendResponse(['success' => true,'message' => 'Week created successfully','id' => $db->lastInsertId()], 201);
         } else {
             sendResponse(['success' => false, 'message' => 'Failed to create week'], 500);}
 }
