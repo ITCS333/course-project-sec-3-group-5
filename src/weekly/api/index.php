@@ -159,6 +159,7 @@ function getAllWeeks(PDO $db): void
     $order = 'asc';}
 
     // TODO: Append ORDER BY {sort} {order} to the query.
+    
 
     // TODO: Prepare, bind (if searching), and execute the statement.
 
