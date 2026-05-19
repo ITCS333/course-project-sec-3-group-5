@@ -514,9 +514,9 @@ function deleteComment(PDO $db, $commentId): void
     // If not, sendResponse HTTP 404.
     $checkStmt = $db->prepare("SELECT id FROM comments_week WHERE id = ?");
     $checkStmt->execute([$commentId]);
-    if ($checkStmt->rowCount() === 0) {
-        sendResponse(['success' => false, 'message' => 'Comment not found'], 404);
-        return;}
+    if (!$checkStmt->fetch()) {
+            sendResponse(['success' => false, 'message' => 'Comment not found'], 404);
+            return;}
 
     // TODO: DELETE FROM comments_week WHERE id = ?
     $deleteStmt = $db->prepare("DELETE FROM comments_week WHERE id = ?");
