@@ -194,7 +194,8 @@ function getWeekById(PDO $db, $id): void
     // TODO: Validate that $id is provided and numeric.
     // If not, call sendResponse with HTTP 400.
     if (!$id || !is_numeric($id)) {
-    sendResponse(['success' => false,'message' => 'Invalid ID'], 400);}
+    sendResponse(['success' => false,'message' => 'Invalid ID'], 400);
+    return;}
 
     // TODO: SELECT id, title, start_date, description, links, created_at
     //       FROM weeks WHERE id = ?
@@ -319,6 +320,7 @@ function updateWeek(PDO $db, array $data): void
 
     if ( !$date || $date->format('Y-m-d') !== $start_date) {
         sendResponse(['success' => false, 'message' => 'Invalid start date'], 400);
+        return;
     }
     $fields[] = "start_date = ?";
     $values[] = $start_date;
@@ -382,7 +384,9 @@ function deleteWeek(PDO $db, $id): void
     $checkStmt->execute([$id]);
     $existingWeek = $checkStmt->fetch();
     if (!$existingWeek) {
-    sendResponse(['success' => false, 'message' => 'Week not found'], 404);}
+    sendResponse(['success' => false, 'message' => 'Week not found'], 404);
+    return;
+    }
 
     // TODO: DELETE FROM weeks WHERE id = ?
     // (comments_week rows are removed automatically by ON DELETE CASCADE.)
@@ -474,7 +478,9 @@ $checkStmt->execute([$week_id]);
 $existingWeek = $checkStmt->fetch();
 
 if (!$existingWeek) {
-    sendResponse(['success' => false, 'message' => 'Week not found'], 404);}
+    sendResponse(['success' => false, 'message' => 'Week not found'], 404);
+    return;
+}
 
     // TODO: INSERT INTO comments_week (week_id, author, text)
     //       VALUES (?, ?, ?)
@@ -520,11 +526,11 @@ function deleteComment(PDO $db, $commentId): void
 
     // TODO: DELETE FROM comments_week WHERE id = ?
     $deleteStmt = $db->prepare("DELETE FROM comments_week WHERE id = ?");
-    $deleteStmt->execute([$commentId]);
+    $success = $deleteStmt->execute([$commentId]);
 
     // TODO: If rowCount() > 0, sendResponse HTTP 200.
     // Otherwise sendResponse HTTP 500.
-    if ($deleteStmt->rowCount() > 0) {
+    if ($success) {
         sendResponse(['success' => true, 'message' => 'Comment deleted successfully'], 200);
     } else {
         sendResponse(['success' => false, 'message' => 'Failed to delete comment'], 500);
