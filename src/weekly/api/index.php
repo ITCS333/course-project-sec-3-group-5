@@ -378,8 +378,7 @@ function deleteWeek(PDO $db, $id): void
     // TODO: Validate that $id is provided and numeric.
     // If not, sendResponse HTTP 400.
     if (!$id || !is_numeric($id)) {
-    sendResponse(['success' => false, 'message' => 'Invalid ID'], 400);
-    return;}
+    sendResponse(['success' => false, 'message' => 'Invalid ID'], 400);}
 
     // TODO: Check that a week with this id exists.
     // If not, sendResponse HTTP 404.
@@ -528,32 +527,32 @@ function deleteComment(PDO $db, $commentId): void
 
     // TODO: Check that the comment exists in comments_week.
     // If not, sendResponse HTTP 404.
-    $checkStmt = $db->prepare("SELECT id FROM comments_week WHERE id = ?");
-    $checkStmt->execute([$commentId]);
-    $existingComment = $checkStmt->fetch(PDO::FETCH_ASSOC);
-    if (!$existingComment) {
-        sendResponse(['success' => false, 'message' => 'Comment not found'], 404);
+    $stmt = $db->prepare("SELECT id FROM comments_week WHERE id = :id");
+    $stmt->execute([':id' => $commentId]);
+    $comment = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$comment) {
+        sendResponse(404, [
+            'error' => 'Comment not found.'
+        ]);
         return;
     }
 
     // TODO: DELETE FROM comments_week WHERE id = ?
-    $stmt = $db->prepare("DELETE FROM comments_week WHERE id = ?");
-    
+    $deleteStmt = $db->prepare("DELETE FROM comments_week WHERE id = ?");
+    $deleteStmt->execute([$commentId]);
 
     // TODO: If rowCount() > 0, sendResponse HTTP 200.
     // Otherwise sendResponse HTTP 500.
 
-   if ($stmt->execute([$commentId]);) {
-    sendResponse([
-        'success' => true,
-        'message' => 'Comment deleted successfully'
-    ], 200);
-} else {
-    sendResponse([
-        'success' => false,
-        'message' => 'Failed to delete comment'
-    ], 500);
-}
+    if ($deleteStmt->rowCount() > 0) {
+        sendResponse(['success' => true, 'message' => 'Comment deleted successfully'], 200);
+        return;
+    } else {
+        sendResponse(['success' => false, 'message' => 'Failed to delete comment'], 500);
+        return;
+    }
+
 }
 
 
@@ -650,9 +649,10 @@ try {
 function sendResponse(array $data, int $statusCode = 200): void
 {
     // TODO: http_response_code($statusCode);
-      http_response_code($statusCode);
+       http_response_code($statusCode);
     // TODO: echo json_encode($data, JSON_PRETTY_PRINT);
-     echo json_encode($data);
+     header('Content-Type: application/json');
+     echo json_encode($data, JSON_PRETTY_PRINT);
     // TODO: exit;
     exit;
 }
