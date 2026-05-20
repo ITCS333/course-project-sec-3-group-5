@@ -378,7 +378,8 @@ function deleteWeek(PDO $db, $id): void
     // TODO: Validate that $id is provided and numeric.
     // If not, sendResponse HTTP 400.
     if (!$id || !is_numeric($id)) {
-    sendResponse(['success' => false, 'message' => 'Invalid ID'], 400);}
+    sendResponse(['success' => false, 'message' => 'Invalid ID'], 400);
+    return;}
 
     // TODO: Check that a week with this id exists.
     // If not, sendResponse HTTP 404.
@@ -542,7 +543,7 @@ function deleteComment(PDO $db, $commentId): void
     // TODO: If rowCount() > 0, sendResponse HTTP 200.
     // Otherwise sendResponse HTTP 500.
 
-   if ($stmt->execute([$commentId]);) {
+   if ($stmt->execute([$commentId])) {
     sendResponse([
         'success' => true,
         'message' => 'Comment deleted successfully'
