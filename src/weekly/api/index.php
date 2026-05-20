@@ -530,21 +530,21 @@ function deleteComment(PDO $db, $commentId): void
     // If not, sendResponse HTTP 404.
     $checkStmt = $db->prepare("SELECT id FROM comments_week WHERE id = ?");
     $checkStmt->execute([$commentId]);
-    $existingComment = $checkStmt->fetch(PDO::FETCH_ASSOC);
-    if (!$existingComment) {
+     
+    if (!$checkStmt->fetch()) {
         sendResponse(['success' => false, 'message' => 'Comment not found'], 404);
         return;
     }
 
     // TODO: DELETE FROM comments_week WHERE id = ?
     $stmt = $db->prepare("DELETE FROM comments_week WHERE id = ?");
-    
+    $stmt->execute([$commentId]);
 
     // TODO: If rowCount() > 0, sendResponse HTTP 200.
     // Otherwise sendResponse HTTP 500.
-
-   if ($stmt->execute([$commentId])) {
-    sendResponse([
+    $affected = $stmt->rowCount();
+    if ($affected > 0){
+        sendResponse([
         'success' => true,
         'message' => 'Comment deleted successfully'
     ], 200);
@@ -555,7 +555,6 @@ function deleteComment(PDO $db, $commentId): void
     ], 500);
 }
 }
-
 
 // ============================================================================
 // MAIN REQUEST ROUTER
