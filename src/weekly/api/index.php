@@ -522,7 +522,8 @@ function deleteComment(PDO $db, $commentId): void
     $stmt->execute([$commentId]);
     $comment = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$comment) {
-         sendResponse(['success' => false, 'message' => 'Comment not found'],404);}
+         sendResponse(['success' => false, 'message' => 'Comment not found'],404);
+         return;}
 
     // TODO: DELETE FROM comments_week WHERE id = ?
     $stmt = $db->prepare("DELETE FROM comments_week WHERE id = ?");
