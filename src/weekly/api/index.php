@@ -109,7 +109,7 @@ $action    = $_GET['action']     ?? null;
 $id        = $_GET['id']         ?? null;  
 $weekId    = $_GET['week_id']    ?? null;  
 parse_str($_SERVER['QUERY_STRING'] ?? '', $query);
-$commentId = $query['comment_id'] ?? ($query['id'] ?? null);
+$commentId = $_GET['comment_id'] ?? null;
 
 // ============================================================================
 // WEEKS FUNCTIONS
@@ -606,9 +606,7 @@ try {
         // ?action=delete_comment&comment_id={id} → delete one comment
         // TODO: if $action === 'delete_comment', call deleteComment($db, $commentId)
 
-        $action = $query['action'] ?? null;
-        $commentId = $query['comment_id'] ?? null;
-        $id = $query['id'] ?? null;
+
         if ($action === 'delete_comment') {
             deleteComment($db, $commentId);
             return;}
