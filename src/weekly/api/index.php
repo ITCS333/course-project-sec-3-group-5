@@ -108,7 +108,8 @@ $data    = json_decode($rawData, true) ?? [];
 $action    = $_GET['action']     ?? null;  
 $id        = $_GET['id']         ?? null;  
 $weekId    = $_GET['week_id']    ?? null;  
-$commentId = $_GET['comment_id'] ?? null;  
+parse_str($_SERVER['QUERY_STRING'] ?? '', $query);
+$commentId = $query['comment_id'] ?? null;  
 
 // ============================================================================
 // WEEKS FUNCTIONS
