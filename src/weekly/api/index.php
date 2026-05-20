@@ -563,51 +563,59 @@ try {
         // ?action=comments&week_id={id} → list comments for a week
         // TODO: if $action === 'comments', call getCommentsByWeek($db, $weekId)
         if ($action === 'comments') {
-            getCommentsByWeek($db, $weekId);}
+            getCommentsByWeek($db, $weekId);
+            return;}
 
         // ?id={id} → single week
         // TODO: elseif $id is set, call getWeekById($db, $id)
         elseif (isset($id)) {
-            getWeekById($db, $id);}
+            getWeekById($db, $id);
+            return;}
 
         // no parameters → all weeks (supports ?search, ?sort, ?order)
         // TODO: else call getAllWeeks($db)
         else {
-            getAllWeeks($db);}
+            getAllWeeks($db);
+            return;}
 
     } elseif ($method === 'POST') {
 
         // ?action=comment → create a comment in comments_week
         // TODO: if $action === 'comment', call createComment($db, $data)
          if ($action === 'comment') {
-            createComment($db, $data);}
+            createComment($db, $data);
+            return;}
 
         // no action → create a new week
         // TODO: else call createWeek($db, $data)
         else {
-            createWeek($db, $data);}
+            createWeek($db, $data);
+            return;}
 
     } elseif ($method === 'PUT') {
 
         // Update a week; id comes from the JSON body
         // TODO: call updateWeek($db, $data)
         updateWeek($db, $data);
-
+        return;
     } elseif ($method === 'DELETE') {
 
         // ?action=delete_comment&comment_id={id} → delete one comment
         // TODO: if $action === 'delete_comment', call deleteComment($db, $commentId)
         if ($action === 'delete_comment') {
-            deleteComment($db, $commentId);}
+            deleteComment($db, $commentId);
+            return;}
 
         // ?id={id} → delete a week (and its comments via CASCADE)
         // TODO: else call deleteWeek($db, $id)
         else {
-            deleteWeek($db, $id);}
+            deleteWeek($db, $id);
+            return;}
 
     } else {
         // TODO: sendResponse HTTP 405 Method Not Allowed.
-        sendResponse(['success' => false, 'message' => 'Method Not Allowed'], 405);}
+        sendResponse(['success' => false, 'message' => 'Method Not Allowed'], 405);
+        return;}
 
 } catch (PDOException $e) {
     // TODO: Log the error with error_log().
