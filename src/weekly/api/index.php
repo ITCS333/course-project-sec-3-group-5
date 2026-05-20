@@ -237,7 +237,8 @@ function createWeek(PDO $db, array $data): void
     // TODO: Validate that title and start_date are present and non-empty.
     // If missing, sendResponse HTTP 400.
     if (empty($data['title']) || empty($data['start_date'])) {
-    sendResponse(['success' => false, 'message' => 'Missing required fields'], 400);}
+    sendResponse(['success' => false, 'message' => 'Missing required fields'], 400);
+    return;}
 
     // TODO: Trim title, start_date, and description.
     $title = trim($data['title']);
@@ -248,7 +249,8 @@ function createWeek(PDO $db, array $data): void
     // If invalid, sendResponse HTTP 400.
     $date = DateTime::createFromFormat('Y-m-d', $start_date);
     if (!$date || $date->format('Y-m-d') !== $start_date) {
-    sendResponse(['success' => false,'message' => 'Invalid start date'], 400);}
+    sendResponse(['success' => false,'message' => 'Invalid start date'], 400);
+    return;}
 
     // TODO: Default description to "" if not provided.
     $description = $data['description'] ?? "";
@@ -296,7 +298,8 @@ function updateWeek(PDO $db, array $data): void
     // TODO: Validate that $data['id'] is present.
     // If not, sendResponse HTTP 400.
     if (empty($data['id'])) {
-    sendResponse(['success' => false, 'message' => 'ID is required'], 400); }
+    sendResponse(['success' => false, 'message' => 'ID is required'], 400);
+    return; }
 
     // TODO: Check that a week with this id exists.
     // If not, sendResponse HTTP 404.
@@ -545,10 +548,11 @@ function deleteComment(PDO $db, $commentId): void
     // Otherwise sendResponse HTTP 500.
     $stmt->execute([$commentId]);
 
-sendResponse([
-    'success' => true,
-    'message' => 'Comment deleted successfully'
-], 200);
+ if ($stmt->rowCount() > 0) {
+        sendResponse(['success' => true, 'message' => 'Week deleted successfully'], 200);
+    } else {
+        sendResponse(['success' => false, 'message' => 'Failed to delete week'], 500);}
+
 }
 
 // ============================================================================
@@ -601,7 +605,7 @@ try {
 
         // ?action=delete_comment&comment_id={id} → delete one comment
         // TODO: if $action === 'delete_comment', call deleteComment($db, $commentId)
-        parse_str($_SERVER['QUERY_STRING'] ?? '', $query);
+
         $action = $query['action'] ?? null;
         $commentId = $query['comment_id'] ?? null;
         $id = $query['id'] ?? null;
