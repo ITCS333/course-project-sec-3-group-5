@@ -420,7 +420,8 @@ function getCommentsByWeek(PDO $db, $weekId): void
     // TODO: Validate that $weekId is provided and numeric.
     // If not, sendResponse HTTP 400.
     if (!$weekId || !is_numeric($weekId)) {
-        sendResponse(['success' => false, 'message' => 'Invalid week ID'], 400);}
+        sendResponse(['success' => false, 'message' => 'Invalid week ID'], 400);
+        return;}
 
     // TODO: SELECT id, week_id, author, text, created_at
     //       FROM comments_week
@@ -461,11 +462,13 @@ function createComment(PDO $db, array $data): void
     $author  = trim($data['author'] ?? '');
     $text    = trim($data['text'] ?? '');
     if (empty($week_id) || empty($author) || empty($text)) {
-    sendResponse(['success' => false, 'message' => 'Missing required fields'], 400);}
+    sendResponse(['success' => false, 'message' => 'Missing required fields'], 400);
+    return;}
 
     // TODO: Validate that week_id is numeric.
     if (!is_numeric($week_id)) {
-    sendResponse(['success' => false, 'message' => 'Invalid week ID'], 400);}
+    sendResponse(['success' => false, 'message' => 'Invalid week ID'], 400);
+    return;}
 
     // TODO: Check that a week with this id exists in the weeks table.
     // If not, sendResponse HTTP 404.
