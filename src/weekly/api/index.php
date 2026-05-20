@@ -303,7 +303,8 @@ function updateWeek(PDO $db, array $data): void
     $checkStmt->execute([$data['id']]);
     $existingWeek = $checkStmt->fetch();
     if (!$existingWeek) {
-    sendResponse(['success' => false,'message' => 'Week not found'], 404);}
+    sendResponse(['success' => false,'message' => 'Week not found'], 404);
+    return;}
 
     // TODO: Dynamically build the SET clause for whichever of
     // title, start_date, description, links are present in $data.
@@ -339,7 +340,8 @@ if (isset($data['links'])) {
 
     // TODO: If no updatable fields are present, sendResponse HTTP 400.
     if (empty($fields)) {
-    sendResponse(['success' => false, 'message' => 'No fields to update'], 400);}
+    sendResponse(['success' => false, 'message' => 'No fields to update'], 400);
+    return;}
 
     // TODO: updated_at is updated automatically by MySQL
     //       (ON UPDATE CURRENT_TIMESTAMP), so no need to set it manually.
@@ -645,10 +647,9 @@ try {
 function sendResponse(array $data, int $statusCode = 200): void
 {
     // TODO: http_response_code($statusCode);
-       http_response_code($statusCode);
+      http_response_code($statusCode);
     // TODO: echo json_encode($data, JSON_PRETTY_PRINT);
-     header('Content-Type: application/json');
-     echo json_encode($data, JSON_PRETTY_PRINT);
+     echo json_encode($data);
     // TODO: exit;
     exit;
 }
