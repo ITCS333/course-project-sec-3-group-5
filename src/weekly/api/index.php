@@ -516,12 +516,16 @@ function deleteComment(PDO $db, $commentId): void
     // TODO: Validate that $commentId is provided and numeric.
     // If not, sendResponse HTTP 400.
      if (empty($commentId) || !is_numeric($commentId)) {
-        sendResponse(['success' => false, 'message' => 'Invalid or missing comment ID'], 400);
-        return;}
+        sendResponse([
+            'success' => false,
+            'message' => 'Invalid comment id'
+        ], 400);
+        return;
+    }
 
     // TODO: Check that the comment exists in comments_week.
     // If not, sendResponse HTTP 404.
-   $checkStmt = $db->prepare("SELECT 1 FROM5 comments_week WHERE id = ?");
+    $checkStmt = $db->prepare("SELECT id FROM comments_week WHERE id = ?");
     $checkStmt->execute([$commentId]);
     $existingComment = $checkStmt->fetch();
     if (!$existingComment) {
@@ -530,16 +534,23 @@ function deleteComment(PDO $db, $commentId): void
     }
 
     // TODO: DELETE FROM comments_week WHERE id = ?
-    $deleteStmt = $db->prepare("DELETE FROM comments_week WHERE id = ?");
-    $deleteStmt->execute([$commentId]);
+    $stmt = $db->prepare("DELETE FROM comments_week WHERE id = ?");
+    $stmt->execute([$commentId]);
 
     // TODO: If rowCount() > 0, sendResponse HTTP 200.
     // Otherwise sendResponse HTTP 500.
-    if ($deleteStmt->rowCount() > 0) {
-        sendResponse(['success' => true, 'message' => 'Comment deleted successfully'], 200);
-    } else {
-        sendResponse(['success' => false, 'message' => 'Failed to delete comment'], 500);
-    }
+
+   if ($stmt->rowCount() > 0) {
+    sendResponse([
+        'success' => true,
+        'message' => 'Comment deleted successfully'
+    ], 200);
+} else {
+    sendResponse([
+        'success' => false,
+        'message' => 'Failed to delete comment'
+    ], 500);
+}
 }
 
 
