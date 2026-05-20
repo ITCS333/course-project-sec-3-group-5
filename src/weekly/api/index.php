@@ -426,7 +426,7 @@ function getCommentsByWeek(PDO $db, $weekId): void
 {
     // TODO: Validate that $weekId is provided and numeric.
     // If not, sendResponse HTTP 400.
-    if (!$weekId || !is_numeric($weekId)) {
+    if ($weekId === null || !is_numeric($weekId)) {
         sendResponse(['success' => false, 'message' => 'Invalid week ID'], 400);
         return;}
 
@@ -522,7 +522,7 @@ function deleteComment(PDO $db, $commentId): void
 {
     // TODO: Validate that $commentId is provided and numeric.
     // If not, sendResponse HTTP 400.
-     if (empty($commentId) || !is_numeric($commentId)) {
+     if ($commentId=== null || !is_numeric($commentId)) {
         sendResponse([
             'success' => false,
             'message' => 'Invalid comment id'
