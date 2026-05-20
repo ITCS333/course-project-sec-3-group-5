@@ -607,6 +607,10 @@ try {
 
         // ?action=delete_comment&comment_id={id} → delete one comment
         // TODO: if $action === 'delete_comment', call deleteComment($db, $commentId)
+        parse_str($_SERVER['QUERY_STRING'] ?? '', $query);
+        $action = $query['action'] ?? null;
+        $commentId = $query['comment_id'] ?? null;
+        $id = $query['id'] ?? null;
         if ($action === 'delete_comment') {
             deleteComment($db, $commentId);
             return;}
