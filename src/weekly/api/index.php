@@ -512,7 +512,7 @@ function deleteComment(PDO $db, $commentId): void
 {
     // TODO: Validate that $commentId is provided and numeric.
     // If not, sendResponse HTTP 400.
-     if (!isset($commentId) || !is_numeric($commentId)) {
+     if (empty($commentId) || !is_numeric($commentId)) {
         sendResponse(['success' => false, 'message' => 'Invalid or missing comment ID'], 400);
         return;}
 
