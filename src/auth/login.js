@@ -52,11 +52,16 @@ async function handleLogin(event) {
     const result = await response.json();
 
     if (result.success) {
-      displayMessage("Login successful!", "success");
+  displayMessage("Login successful!", "success");
 
-      emailInput.value = "";
-      passwordInput.value = "";
+  setTimeout(function () {
+    if (result.user && Number(result.user.is_admin) === 1) {
+      window.location.href = "../admin/manage_users.html";
     } else {
+      window.location.href = "../../index.html";
+    }
+  }, 800);
+} else {
       displayMessage(result.message, "error");
     }
   } catch (error) {
