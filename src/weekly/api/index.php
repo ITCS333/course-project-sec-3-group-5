@@ -97,7 +97,13 @@ $method = $_SERVER['REQUEST_METHOD'];
 // $rawData = file_get_contents('php://input');
 // $data    = json_decode($rawData, true) ?? [];
 $rawData = file_get_contents('php://input');
-$data    = json_decode($rawData, true) ?? [];
+$data = json_decode($rawData, true);
+
+if (!is_array($data)) {
+    parse_str($rawData, $data);
+}
+
+$data = $data ?? [];
 
 
 // TODO: Read query parameters.
@@ -105,12 +111,10 @@ $data    = json_decode($rawData, true) ?? [];
 // $id        = $_GET['id']         ?? null;  // integer week id
 // $weekId    = $_GET['week_id']    ?? null;  // integer week id for comments queries
 // $commentId = $_GET['comment_id'] ?? null;  // integer comment id
-parse_str($_SERVER['QUERY_STRING'] ?? '', $query);
-
-$action    = $query['action'] ?? null;
-$id        = $query['id'] ?? null;
-$weekId    = $query['week_id'] ?? null;
-$commentId = $query['comment_id'] ?? null;
+$action = $data['action'] ?? $_GET['action'] ?? null;
+$id = $data['id'] ?? $_GET['id'] ?? null;
+$weekId = $data['week_id'] ?? $_GET['week_id'] ?? null;
+$commentId = $data['comment_id'] ?? $_GET['comment_id'] ?? null;
 
 // ============================================================================
 // WEEKS FUNCTIONS
