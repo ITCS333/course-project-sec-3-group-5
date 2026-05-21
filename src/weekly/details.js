@@ -254,3 +254,9 @@ async function initializePage() {
 
 // --- Initial Page Load ---
 initializePage();
+window.getWeekIdFromURL = getWeekIdFromURL;
+window.renderWeekDetails = renderWeekDetails;
+window.createCommentArticle = createCommentArticle;
+window.renderComments = renderComments;
+window.handleAddComment = handleAddComment;
+window.initializePage = initializePage;
