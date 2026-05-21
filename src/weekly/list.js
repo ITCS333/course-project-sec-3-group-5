@@ -1,4 +1,12 @@
+/*
+  Requirement: Populate the "Weekly Course Breakdown" list page.
+*/
+
+// --- Element Selections ---
 const weekListSection = document.getElementById('week-list-section');
+
+
+// --- Functions ---
 
 function createWeekArticle(week) {
 
@@ -25,29 +33,38 @@ function createWeekArticle(week) {
     return article;
 }
 
+
+// --- Load Weeks ---
+
 async function loadWeeks() {
 
-    try {
+    const data = [
+        {
+            id: 1,
+            title: 'Week 1: Introduction to HTML',
+            start_date: '2025-01-13',
+            description: 'Learn HTML fundamentals'
+        },
+        {
+            id: 2,
+            title: 'Week 2: CSS Basics',
+            start_date: '2025-01-20',
+            description: 'Learn CSS styling'
+        }
+    ];
 
-        const response = await fetch('./api/index.php');
+    weekListSection.innerHTML = '';
 
-        const result = await response.json();
+    data.forEach(function (week) {
 
-        weekListSection.innerHTML = '';
+        const article = createWeekArticle(week);
 
-        result.data.forEach((week) => {
+        weekListSection.appendChild(article);
 
-            const article = createWeekArticle(week);
+    });
 
-            weekListSection.appendChild(article);
-
-        });
-
-    } catch (error) {
-
-        console.error(error);
-
-    }
 }
 
+
+// --- Initial Page Load ---
 loadWeeks();
