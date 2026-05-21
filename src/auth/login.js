@@ -16,23 +16,57 @@ function isValidPassword(password) {
   return password.length >= 8;
 }
 
-function handleLogin(event) {
+async function handleLogin(event) {
   event.preventDefault();
+
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
+
+  if (!email || !password) {
+    displayMessage("Please fill all fields.", "error");
+    return;
+  }
 
   if (!isValidEmail(email)) {
     displayMessage("Invalid email format.", "error");
     return;
   }
+
   if (!isValidPassword(password)) {
     displayMessage("Password must be at least 8 characters.", "error");
     return;
   }
 
+  try {
+    const response = await fetch("./api/index.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
   displayMessage("Login successful!", "success");
-  emailInput.value = "";
-  passwordInput.value = "";
+
+  setTimeout(function () {
+    if (result.user && Number(result.user.is_admin) === 1) {
+      window.location.href = "../admin/manage_users.html";
+    } else {
+      window.location.href = "../../index.html";
+    }
+  }, 800);
+} else {
+      displayMessage(result.message, "error");
+    }
+  } catch (error) {
+    displayMessage("Server error.", "error");
+  }
 }
 
 function setupLoginForm() {
