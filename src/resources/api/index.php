@@ -29,8 +29,7 @@ function validateUrl($url) {
 }
 
 try {
-    global $pdo;
-
+$pdo = getDBConnection();
     if ($method === "GET") {
         if (isset($_GET["id"])) {
             $stmt = $pdo->prepare("SELECT * FROM resources WHERE id = ?");
