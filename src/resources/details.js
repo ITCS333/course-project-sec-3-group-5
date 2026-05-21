@@ -68,11 +68,17 @@ async function handleAddComment(event) {
 
   const result = await response.json();
 
-  if (result.success) {
-    currentComments.push(result.data);
-    renderComments();
-    newComment.value = "";
-  }
+ if (result.success) {
+  currentComments.push({
+    id: result.id,
+    resource_id: currentResourceId,
+    author: "Student",
+    text: commentText
+  });
+
+  renderComments();
+  newComment.value = "";
+}
 }
 
 async function initializePage() {
