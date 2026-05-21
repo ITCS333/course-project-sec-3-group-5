@@ -105,11 +105,11 @@ $data    = json_decode($rawData, true) ?? [];
 // $id        = $_GET['id']         ?? null;  // integer week id
 // $weekId    = $_GET['week_id']    ?? null;  // integer week id for comments queries
 // $commentId = $_GET['comment_id'] ?? null;  // integer comment id
-$action    = $_GET['action']     ?? null;  
+$action = $data['action'] ?? $_GET['action'] ?? null;
 $id        = $_GET['id']         ?? null;  
 $weekId    = $_GET['week_id']    ?? null;  
 parse_str($_SERVER['QUERY_STRING'] ?? '', $query);
-$commentId = $_GET['comment_id'] ?? ($data['comment_id'] ?? null);
+$commentId = $data['comment_id'] ?? $_GET['comment_id'] ?? null;
 
 // ============================================================================
 // WEEKS FUNCTIONS
