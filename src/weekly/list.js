@@ -2,12 +2,11 @@
   Requirement: Populate the "Weekly Course Breakdown" list page.
 */
 
-// --- Element Selections ---
+// ---------- Element Selection ----------
 const weekListSection = document.getElementById('week-list-section');
 
 
-// --- Functions ---
-
+// ---------- Create Week Article ----------
 function createWeekArticle(week) {
 
     const article = document.createElement('article');
@@ -16,13 +15,13 @@ function createWeekArticle(week) {
     title.textContent = week.title;
 
     const startDate = document.createElement('p');
-    startDate.textContent = `Starts on: ${week.start_date}`;
+    startDate.textContent = 'Starts on: ' + week.start_date;
 
     const description = document.createElement('p');
     description.textContent = week.description;
 
     const link = document.createElement('a');
-    link.href = `details.html?id=${week.id}`;
+    link.href = 'details.html?id=' + week.id;
     link.textContent = 'View Details & Discussion';
 
     article.appendChild(title);
@@ -34,17 +33,17 @@ function createWeekArticle(week) {
 }
 
 
-// --- Load Weeks ---
+// ---------- Load Weeks ----------
+function loadWeeks() {
 
-async function loadWeeks() {
-
-    const data = [
+    const weeks = [
         {
             id: 1,
             title: 'Week 1: Introduction to HTML',
             start_date: '2025-01-13',
             description: 'Learn HTML fundamentals'
         },
+
         {
             id: 2,
             title: 'Week 2: CSS Basics',
@@ -55,7 +54,7 @@ async function loadWeeks() {
 
     weekListSection.innerHTML = '';
 
-    data.forEach(function (week) {
+    weeks.forEach(function (week) {
 
         const article = createWeekArticle(week);
 
@@ -66,5 +65,10 @@ async function loadWeeks() {
 }
 
 
-// --- Initial Page Load ---
+// ---------- Initial Page Load ----------
 loadWeeks();
+
+
+// ---------- Export Functions For Tests ----------
+window.createWeekArticle = createWeekArticle;
+window.loadWeeks = loadWeeks;
