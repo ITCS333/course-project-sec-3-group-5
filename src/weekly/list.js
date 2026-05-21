@@ -8,13 +8,13 @@ function createWeekArticle(week) {
     title.textContent = week.title;
 
     const startDate = document.createElement('p');
-    startDate.textContent = 'Starts on: ' + week.start_date;
+    startDate.textContent = `Starts on: ${week.start_date}`;
 
     const description = document.createElement('p');
     description.textContent = week.description;
 
     const link = document.createElement('a');
-    link.href = 'details.html?id=' + week.id;
+    link.href = `details.html?id=${week.id}`;
     link.textContent = 'View Details & Discussion';
 
     article.appendChild(title);
@@ -27,27 +27,27 @@ function createWeekArticle(week) {
 
 async function loadWeeks() {
 
-    const weeks = [
-        {
-            id: 1,
-            title: 'Week 1: Introduction to HTML',
-            start_date: '2025-01-13',
-            description: 'Learn HTML fundamentals'
-        },
-        {
-            id: 2,
-            title: 'Week 2: CSS Basics',
-            start_date: '2025-01-20',
-            description: 'Learn CSS styling basics'
-        }
-    ];
+    try {
 
-    weekListSection.innerHTML = '';
+        const response = await fetch('./api/index.php');
 
-    weeks.forEach(function(week) {
-        const article = createWeekArticle(week);
-        weekListSection.appendChild(article);
-    });
+        const result = await response.json();
+
+        weekListSection.innerHTML = '';
+
+        result.data.forEach((week) => {
+
+            const article = createWeekArticle(week);
+
+            weekListSection.appendChild(article);
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
 }
 
 loadWeeks();
