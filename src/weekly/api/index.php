@@ -507,41 +507,42 @@ if (!$existingWeek) {
  * Response (success): HTTP 200.
  * Response (not found): HTTP 404.
  */
-function deleteWeek(PDO $db, $id): void
+function deleteComment(PDO $db, $commentId): void
 {
-    // TODO: Validate that $id is provided and numeric.
+    // TODO: Validate that $commentId is provided and numeric.
     // If not, sendResponse HTTP 400.
-   if (!$id || !is_numeric($id)) {
-    sendResponse(['success' => false, 'message' => 'Invalid ID'], 400);
-    return;
-}
+     if ($commentId=== null || !is_numeric($commentId)) {
+        sendResponse([
+            'success' => false,
+            'message' => 'Invalid comment id'
+        ], 400);
+        return;
+    }
 
-    // TODO: Check that a week with this id exists.
+    // TODO: Check that the comment exists in comments_week.
     // If not, sendResponse HTTP 404.
-   $checkStmt = $db->prepare("SELECT id FROM weeks WHERE id = ?");
-$checkStmt->execute([$id]);
-$existingWeek = $checkStmt->fetch();
+    $checkStmt = $db->prepare("SELECT id FROM comments_week WHERE id = ?");
+    $checkStmt->execute([$commentId]);
+     
+    if (!$checkStmt->fetch()) {
+        sendResponse(['success' => false, 'message' => 'Comment not found'], 404);
+        return;
+    }
 
-if (!$existingWeek) {
-    sendResponse(['success' => false, 'message' => 'Week not found'], 404);
-    return;
-}
-
-    // TODO: DELETE FROM weeks WHERE id = ?
-    // (comments_week rows are removed automatically by ON DELETE CASCADE.)
-    $stmt = $db->prepare("DELETE FROM weeks WHERE id = ?");
-$stmt->execute([$id]);
+    // TODO: DELETE FROM comments_week WHERE id = ?
+    $stmt = $db->prepare("DELETE FROM comments_week WHERE id = ?");
+   
 
     // TODO: If rowCount() > 0, sendResponse HTTP 200.
     // Otherwise sendResponse HTTP 500.
-    if ($stmt->rowCount() > 0) {
-    sendResponse(['success' => true, 'message' => 'Week deleted successfully'], 200);
-} else {
-    sendResponse(['success' => false, 'message' => 'Failed to delete week'], 500);
-}
-}
+    $stmt->execute([$commentId]);
 
+ if ($stmt->rowCount() > 0) {
+        sendResponse(['success' => true, 'message' => 'Week deleted successfully'], 200);
+    } else {
+        sendResponse(['success' => false, 'message' => 'Failed to delete week'], 500);}
 
+}
 
 // ============================================================================
 // MAIN REQUEST ROUTER
