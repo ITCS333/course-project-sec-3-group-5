@@ -111,10 +111,17 @@ $data = $data ?? [];
 // $id        = $_GET['id']         ?? null;  // integer week id
 // $weekId    = $_GET['week_id']    ?? null;  // integer week id for comments queries
 // $commentId = $_GET['comment_id'] ?? null;  // integer comment id
-$action = $data['action'] ?? $_GET['action'] ?? null;
-$id = $data['id'] ?? $_GET['id'] ?? null;
-$weekId = $data['week_id'] ?? $_GET['week_id'] ?? null;
-$commentId = $data['comment_id'] ?? $_GET['comment_id'] ?? null;
+if ($method === 'POST' || $method === 'PUT') {
+    $action = $data['action'] ?? $_GET['action'] ?? null;
+    $id = $data['id'] ?? $_GET['id'] ?? null;
+    $weekId = $data['week_id'] ?? $_GET['week_id'] ?? null;
+    $commentId = $data['comment_id'] ?? $_GET['comment_id'] ?? null;
+} else {
+    $action = $_GET['action'] ?? null;
+    $id = $_GET['id'] ?? null;
+    $weekId = $_GET['week_id'] ?? null;
+    $commentId = $_GET['comment_id'] ?? null;
+}
 
 // ============================================================================
 // WEEKS FUNCTIONS
@@ -530,7 +537,7 @@ function deleteComment(PDO $db, $commentId): void
     $checkStmt = $db->prepare("SELECT id FROM comments_week WHERE id = ?");
     $checkStmt->execute([$commentId]);
      
-    if (!$checkStmt->fetch(PDO::FETCH_ASSOC)) {
+    if (!$checkStmt->fetch()) {
         sendResponse(['success' => false, 'message' => 'Comment not found'], 404);
         return;
     }
