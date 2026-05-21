@@ -1,8 +1,31 @@
+const loginForm = document.getElementById("login-form");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const messageContainer = document.getElementById("message-container");
+
+function displayMessage(message, type) {
+  messageContainer.textContent = message;
+  messageContainer.className = type;
+}
+
+function isValidEmail(email) {
+  return /\S+@\S+\.\S+/.test(email);
+}
+
+function isValidPassword(password) {
+  return password.length >= 8;
+}
+
 async function handleLogin(event) {
   event.preventDefault();
 
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
+
+  if (!email || !password) {
+    displayMessage("Please fill all fields.", "error");
+    return;
+  }
 
   if (!isValidEmail(email)) {
     displayMessage("Invalid email format.", "error");
@@ -40,3 +63,11 @@ async function handleLogin(event) {
     displayMessage("Server error.", "error");
   }
 }
+
+function setupLoginForm() {
+  if (loginForm) {
+    loginForm.addEventListener("submit", handleLogin);
+  }
+}
+
+setupLoginForm();
