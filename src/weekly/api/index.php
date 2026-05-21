@@ -109,7 +109,7 @@ $action    = $_GET['action']     ?? null;
 $id        = $_GET['id']         ?? null;  
 $weekId    = $_GET['week_id']    ?? null;  
 parse_str($_SERVER['QUERY_STRING'] ?? '', $query);
-$commentId = $_GET['comment_id'] ?? null;
+$commentId = $_GET['comment_id'] ?? ($data['comment_id'] ?? null);
 
 // ============================================================================
 // WEEKS FUNCTIONS
@@ -538,14 +538,16 @@ function deleteComment(PDO $db, $commentId): void
 
     // TODO: DELETE FROM comments_week WHERE id = ?
     $stmt = $db->prepare("DELETE FROM comments_week WHERE id = ?");
-   $stmt->execute([$commentId]);
+   
 
     // TODO: If rowCount() > 0, sendResponse HTTP 200.
     // Otherwise sendResponse HTTP 500.
-  sendResponse([
-        'success' => true,
-        'message' => 'Comment deleted successfully'
-    ], 200);
+    $stmt->execute([$commentId]);
+
+ if ($stmt->rowCount() > 0) {
+        sendResponse(['success' => true, 'message' => 'Week deleted successfully'], 200);
+    } else {
+        sendResponse(['success' => false, 'message' => 'Failed to delete week'], 500);}
 
 }
 
