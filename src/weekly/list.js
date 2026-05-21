@@ -1,76 +1,82 @@
 let weeks = [];
 
 const weekListSection =
-  document.getElementById('week-list-section');
+    document.getElementById('week-list-section');
 
 function createWeekArticle(week) {
 
-  const article = document.createElement('article');
+    const article = document.createElement('article');
 
-  const title = document.createElement('h2');
-  title.textContent = week.title;
+    const title = document.createElement('h2');
+    title.textContent = week.title;
 
-  const startDate = document.createElement('p');
-  startDate.textContent =
-    'Starts on: ' + week.start_date;
+    const startDate = document.createElement('p');
+    startDate.textContent =
+        'Starts on: ' + week.start_date;
 
-  const description = document.createElement('p');
-  description.textContent =
-    week.description;
+    const description = document.createElement('p');
+    description.textContent =
+        week.description;
 
-  const link = document.createElement('a');
-  link.href =
-    'details.html?id=' + week.id;
+    const link = document.createElement('a');
 
-  link.textContent =
-    'View Details & Discussion';
+    link.href =
+        'details.html?id=' + week.id;
 
-  article.appendChild(title);
-  article.appendChild(startDate);
-  article.appendChild(description);
-  article.appendChild(link);
+    link.textContent =
+        'View Details & Discussion';
 
-  return article;
+    article.appendChild(title);
+    article.appendChild(startDate);
+    article.appendChild(description);
+    article.appendChild(link);
+
+    return article;
 }
 
 function renderWeekList() {
 
-  weekListSection.innerHTML = '';
+    weekListSection.innerHTML = '';
 
-  weeks.forEach(function(week) {
+    for (const week of weeks) {
 
-    const article =
-      createWeekArticle(week);
+        const article =
+            createWeekArticle(week);
 
-    weekListSection.appendChild(article);
-
-  });
+        weekListSection.appendChild(article);
+    }
 }
 
 async function loadWeeks() {
 
-  const response =
-    await fetch('./api/index.php');
+    try {
 
-  const result =
-    await response.json();
+        const response =
+            await fetch('./api/index.php');
 
-  if (result.success === true) {
+        const result =
+            await response.json();
 
-    weeks = result.data;
+        if (result.success) {
 
-    renderWeekList();
+            weeks = result.data;
 
-  }
+            renderWeekList();
+        }
+
+    } catch (error) {
+
+        console.error(error);
+    }
 }
 
 loadWeeks();
 
 window.createWeekArticle =
-  createWeekArticle;
+    createWeekArticle;
 
 window.renderWeekList =
-  renderWeekList;
+    renderWeekList;
 
 window.loadWeeks =
-  loadWeeks;
+    loadWeeks;
