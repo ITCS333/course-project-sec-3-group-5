@@ -1,21 +1,3 @@
-const loginForm = document.getElementById("login-form");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const messageContainer = document.getElementById("message-container");
-
-function displayMessage(message, type) {
-  messageContainer.textContent = message;
-  messageContainer.className = type;
-}
-
-function isValidEmail(email) {
-  return /\S+@\S+\.\S+/.test(email);
-}
-
-function isValidPassword(password) {
-  return password.length >= 8;
-}
-
 async function handleLogin(event) {
   event.preventDefault();
 
@@ -49,23 +31,12 @@ async function handleLogin(event) {
     if (result.success) {
       displayMessage("Login successful!", "success");
 
-      if (result.user && Number(result.user.is_admin) === 1) {
-        window.location.href = "../admin/manage_users.html";
-      } else {
-        window.location.href = "../../index.html";
-      }
+      emailInput.value = "";
+      passwordInput.value = "";
     } else {
-      displayMessage(result.message || "Login failed.", "error");
+      displayMessage(result.message, "error");
     }
   } catch (error) {
-    displayMessage("Server error. Please try again.", "error");
+    displayMessage("Server error.", "error");
   }
 }
-
-function setupLoginForm() {
-  if (loginForm) {
-    loginForm.addEventListener("submit", handleLogin);
-  }
-}
-
-setupLoginForm();
