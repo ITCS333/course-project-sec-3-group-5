@@ -480,9 +480,10 @@ function createComment(PDO $db, array $data): void
     // TODO: Check that a week with this id exists in the weeks table.
     // If not, sendResponse HTTP 404.
     $checkStmt = $db->prepare("SELECT id FROM weeks WHERE id = ?");
-    $checkStmt->execute([$week_id]);
-    $existingWeek = $checkStmt->fetch();
-    if (!$existingWeek) {
+$checkStmt->execute([$week_id]);
+$existingWeek = $checkStmt->fetch();
+
+if (!$existingWeek) {
     sendResponse(['success' => false, 'message' => 'Week not found'], 404);
     return;
 }
