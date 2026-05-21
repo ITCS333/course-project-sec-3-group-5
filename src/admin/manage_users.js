@@ -1,16 +1,16 @@
 let users = [];
 const currentAdminId = 1;
 
-const userTableBody     = document.getElementById("user-table-body");
-const addUserForm       = document.getElementById("add-user-form");
+const userTableBody = document.getElementById("user-table-body");
+const addUserForm = document.getElementById("add-user-form");
 const changePasswordForm = document.getElementById("password-form");
-const searchInput       = document.getElementById("search-input");
-const tableHeaders      = document.querySelectorAll("#user-table thead th");
+const searchInput = document.getElementById("search-input");
+const tableHeaders = document.querySelectorAll("#user-table thead th");
 
 function createUserRow(user) {
   const tr = document.createElement("tr");
 
-  const nameTd  = document.createElement("td");
+  const nameTd = document.createElement("td");
   nameTd.textContent = user.name;
 
   const emailTd = document.createElement("td");
@@ -44,156 +44,218 @@ function createUserRow(user) {
 
 function renderTable(userArray) {
   userTableBody.innerHTML = "";
-  userArray.forEach(u => userTableBody.appendChild(createUserRow(u)));
+
+  userArray.forEach(user => {
+    userTableBody.appendChild(createUserRow(user));
+  });
 }
 
 function handleChangePassword(event) {
   event.preventDefault();
+
   const current = document.getElementById("current-password").value;
-  const next    = document.getElementById("new-password").value;
+  const next = document.getElementById("new-password").value;
   const confirm = document.getElementById("confirm-password").value;
 
   if (next !== confirm) {
     alert("Passwords do not match.");
     return;
   }
+
   if (next.length < 8) {
     alert("Password must be at least 8 characters.");
     return;
   }
 
-  fetch("../api/index.php?action=change_password", {
-    method:  "POST",
-    headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({
-      id:               currentAdminId,
+  fetch("./api/index.php?action=change_password", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      id: currentAdminId,
       current_password: current,
-      new_password:     next,
-    }),
+      new_password: next
+    })
   })
-    .then(r => r.json().then(j => ({ ok: r.ok, body: j })))
-    .then(({ ok, body }) => {
-      if (ok && body.success) {
+    .then(response => response.json())
+    .then(result => {
+      if (result.success) {
         alert("Password updated successfully!");
       } else {
-        alert(body.message || "Failed to update password.");
+        alert(result.message || "Failed to update password.");
       }
     })
-    .catch(err => alert("Network error: " + err.message));
+    .catch(error => {
+      alert("Network error.");
+      console.error(error);
+    });
 
   document.getElementById("current-password").value = "";
-  document.getElementById("new-password").value     = "";
+  document.getElementById("new-password").value = "";
   document.getElementById("confirm-password").value = "";
 }
 
 function handleAddUser(event) {
   event.preventDefault();
-  const name     = document.getElementById("user-name").value.trim();
-  const email    = document.getElementById("user-email").value.trim();
+
+  const name = document.getElementById("user-name").value.trim();
+  const email = document.getElementById("user-email").value.trim();
   const password = document.getElementById("default-password").value;
-  const isAdmin  = Number(document.getElementById("is-admin").value);
+  const isAdmin = Number(document.getElementById("is-admin").value);
 
   if (!name || !email || !password) {
     alert("Please fill out all required fields.");
     return;
   }
+
   if (password.length < 8) {
     alert("Password must be at least 8 characters.");
     return;
   }
 
-  fetch("../api/index.php", {
-    method:  "POST",
-    headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({ name, email, password, is_admin: isAdmin }),
+  fetch("./api/index.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: name,
+      email: email,
+      password: password,
+      is_admin: isAdmin
+    })
   })
-    .then(r => r.json().then(j => ({ status: r.status, body: j })))
-    .then(({ status, body }) => {
-      if (status === 201) {
+    .then(response => response.json())
+    .then(result => {
+      if (result.success) {
         addUserForm.reset();
         loadUsersAndInitialize();
       } else {
-        alert(body.message || "Failed to add user.");
+        alert(result.message || "Failed to add user.");
       }
     })
-    .catch(err => alert("Network error: " + err.message));
+    .catch(error => {
+      alert("Network error.");
+      console.error(error);
+    });
 }
 
 function handleTableClick(event) {
   const target = event.target;
-  if (!target) return;
 
-  if (target.classList && target.classList.contains("delete-btn")) {
+  if (target.classList.contains("delete-btn")) {
     const id = target.dataset.id;
-    if (!confirm("Delete this user?")) return;
-    fetch("../api/index.php?id=" + id, { method: "DELETE" })
-      .then(r => r.json().then(j => ({ ok: r.ok, body: j })))
-      .then(({ ok, body }) => {
-        if (ok && body.success) {
-          users = users.filter(u => String(u.id) !== String(id));
+
+    if (!confirm("Delete this user?")) {
+      return;
+    }
+
+    fetch(`./api/index.php?id=${id}`, {
+      method: "DELETE"
+    })
+      .then(response => response.json())
+      .then(result => {
+        if (result.success) {
+          users = users.filter(user => String(user.id) !== String(id));
           renderTable(users);
         } else {
-          alert(body.message || "Failed to delete user.");
+          alert(result.message || "Failed to delete user.");
         }
       })
-      .catch(err => alert("Network error: " + err.message));
+      .catch(error => {
+        alert("Network error.");
+        console.error(error);
+      });
+
     return;
   }
 
-  if (target.classList && target.classList.contains("edit-btn")) {
-    const id   = target.dataset.id;
-    const user = users.find(u => String(u.id) === String(id));
-    if (!user) return;
+  if (target.classList.contains("edit-btn")) {
+    const id = target.dataset.id;
+
+    const user = users.find(user => String(user.id) === String(id));
+
+    if (!user) {
+      return;
+    }
+
     const newName = prompt("New name:", user.name);
-    if (newName === null) return;
-    fetch("../api/index.php", {
-      method:  "PUT",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ id: Number(id), name: newName }),
+
+    if (newName === null) {
+      return;
+    }
+
+    fetch("./api/index.php", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        id: Number(id),
+        name: newName
+      })
     })
-      .then(r => r.json().then(j => ({ ok: r.ok, body: j })))
-      .then(({ ok, body }) => {
-        if (ok && body.success) {
+      .then(response => response.json())
+      .then(result => {
+        if (result.success) {
           loadUsersAndInitialize();
         } else {
-          alert(body.message || "Failed to update user.");
+          alert(result.message || "Failed to update user.");
         }
       })
-      .catch(err => alert("Network error: " + err.message));
+      .catch(error => {
+        alert("Network error.");
+        console.error(error);
+      });
   }
 }
 
-function handleSearch(event) {
+function handleSearch() {
   const term = searchInput.value.toLowerCase();
+
   if (!term) {
     renderTable(users);
     return;
   }
-  const filtered = users.filter(u =>
-    (u.name  || "").toLowerCase().includes(term) ||
-    (u.email || "").toLowerCase().includes(term)
+
+  const filtered = users.filter(user =>
+    (user.name || "").toLowerCase().includes(term) ||
+    (user.email || "").toLowerCase().includes(term)
   );
+
   renderTable(filtered);
 }
 
 function handleSort(event) {
-  const th  = event.currentTarget;
+  const th = event.currentTarget;
   const idx = th.cellIndex;
-  const map = { 0: "name", 1: "email", 2: "is_admin" };
+
+  const map = {
+    0: "name",
+    1: "email",
+    2: "is_admin"
+  };
+
   const key = map[idx];
-  if (!key) return;
+
+  if (!key) {
+    return;
+  }
 
   const dir = th.dataset.sortDir === "asc" ? "desc" : "asc";
   th.dataset.sortDir = dir;
 
   users.sort((a, b) => {
-    let cmp;
+    let compare;
+
     if (key === "is_admin") {
-      cmp = Number(a.is_admin) - Number(b.is_admin);
+      compare = Number(a.is_admin) - Number(b.is_admin);
     } else {
-      cmp = String(a[key]).localeCompare(String(b[key]));
+      compare = String(a[key]).localeCompare(String(b[key]));
     }
-    return dir === "asc" ? cmp : -cmp;
+
+    return dir === "asc" ? compare : -compare;
   });
 
   renderTable(users);
@@ -201,27 +263,39 @@ function handleSort(event) {
 
 async function loadUsersAndInitialize() {
   try {
-    const response = await fetch("../api/index.php");
-    if (!response.ok) {
-      console.error("Failed to load users:", response.status);
-      alert("Failed to load users.");
-      return;
-    }
-    const json = await response.json();
-    users = json.data || [];
+    const response = await fetch("./api/index.php");
+    const result = await response.json();
+
+    users = result.data || [];
+
     renderTable(users);
-  } catch (err) {
-    console.error(err);
-    alert("Network error loading users.");
+  } catch (error) {
+    console.error(error);
+    alert("Failed to load users.");
   }
 
-  if (!loadUsersAndInitialize._listenersAttached) {
-    if (changePasswordForm) changePasswordForm.addEventListener("submit", handleChangePassword);
-    if (addUserForm)        addUserForm.addEventListener("submit", handleAddUser);
-    if (userTableBody)      userTableBody.addEventListener("click", handleTableClick);
-    if (searchInput)        searchInput.addEventListener("input", handleSearch);
-    if (tableHeaders)       tableHeaders.forEach(th => th.addEventListener("click", handleSort));
-    loadUsersAndInitialize._listenersAttached = true;
+  if (!loadUsersAndInitialize.initialized) {
+    if (changePasswordForm) {
+      changePasswordForm.addEventListener("submit", handleChangePassword);
+    }
+
+    if (addUserForm) {
+      addUserForm.addEventListener("submit", handleAddUser);
+    }
+
+    if (userTableBody) {
+      userTableBody.addEventListener("click", handleTableClick);
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener("input", handleSearch);
+    }
+
+    tableHeaders.forEach(th => {
+      th.addEventListener("click", handleSort);
+    });
+
+    loadUsersAndInitialize.initialized = true;
   }
 }
 
