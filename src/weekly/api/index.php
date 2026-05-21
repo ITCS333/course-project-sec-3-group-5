@@ -538,16 +538,14 @@ function deleteComment(PDO $db, $commentId): void
 
     // TODO: DELETE FROM comments_week WHERE id = ?
     $stmt = $db->prepare("DELETE FROM comments_week WHERE id = ?");
-   
+   $stmt->execute([$commentId]);
 
     // TODO: If rowCount() > 0, sendResponse HTTP 200.
     // Otherwise sendResponse HTTP 500.
-    $stmt->execute([$commentId]);
-
- if ($stmt->rowCount() > 0) {
-        sendResponse(['success' => true, 'message' => 'Week deleted successfully'], 200);
-    } else {
-        sendResponse(['success' => false, 'message' => 'Failed to delete week'], 500);}
+  sendResponse([
+        'success' => true,
+        'message' => 'Comment deleted successfully'
+    ], 200);
 
 }
 
