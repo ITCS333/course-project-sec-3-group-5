@@ -608,99 +608,81 @@ try {
         // ?action=comments&week_id={id} → list comments for a week
         // TODO: if $action === 'comments', call getCommentsByWeek($db, $weekId)
         if ($action === 'comments') {
-    getCommentsByWeek($db, $weekId);
-    return;
-}
+            getCommentsByWeek($db, $weekId);
+            return;
+        }
 
         // ?id={id} → single week
         // TODO: elseif $id is set, call getWeekById($db, $id)
         elseif (isset($id)) {
-    getWeekById($db, $id);
-    return;
-}
+            getWeekById($db, $id);
+            return;
+        }
 
         // no parameters → all weeks (supports ?search, ?sort, ?order)
         // TODO: else call getAllWeeks($db)
         else {
-    getAllWeeks($db);
-    return;
-}
+            getAllWeeks($db);
+            return;
+        }
+
     } elseif ($method === 'POST') {
 
         // ?action=comment → create a comment in comments_week
         // TODO: if $action === 'comment', call createComment($db, $data)
-         if ($action === 'comment') {
-    createComment($db, $data);
-    return;
-}
+        if ($action === 'comment') {
+            createComment($db, $data);
+            return;
+        }
 
         // no action → create a new week
         // TODO: else call createWeek($db, $data)
         else {
-    createWeek($db, $data);
-    return;
-}
+            createWeek($db, $data);
+            return;
+        }
 
     } elseif ($method === 'PUT') {
 
         // Update a week; id comes from the JSON body
         // TODO: call updateWeek($db, $data)
         updateWeek($db, $data);
-return;
+        return;
+
     } elseif ($method === 'DELETE') {
 
         // ?action=delete_comment&comment_id={id} → delete one comment
         // TODO: if $action === 'delete_comment', call deleteComment($db, $commentId)
-if ($action === 'delete_comment') {
-    deleteComment($db, $commentId);
-    return;
-}
+        if ($action === 'delete_comment') {
+            deleteComment($db, $commentId);
+            return;
+        }
+
         // ?id={id} → delete a week (and its comments via CASCADE)
         // TODO: else call deleteWeek($db, $id)
         else {
-    deleteWeek($db, $id);
-    return;
-}
+            deleteWeek($db, $id);
+            return;
+        }
+
     } else {
         // TODO: sendResponse HTTP 405 Method Not Allowed.
         sendResponse(['success' => false, 'message' => 'Method Not Allowed'], 405);
-return;
+        return;
+    }
 
 } catch (PDOException $e) {
     // TODO: Log the error with error_log().
     // Return a generic HTTP 500 — do NOT expose $e->getMessage() to clients.
-   error_log($e->getMessage());
-sendResponse(['success' => false, 'message' => 'Database error occurred.'], 500);
+    error_log($e->getMessage());
+    sendResponse(['success' => false, 'message' => 'Database error occurred.'], 500);
 
 } catch (Exception $e) {
     // TODO: Log the error with error_log().
     // Return HTTP 500 using sendResponse().
-     error_log($e->getMessage());
-sendResponse(['success' => false, 'message' => 'Internal server error.'], 500);
-
+    error_log($e->getMessage());
+    sendResponse(['success' => false, 'message' => 'Internal server error.'], 500);
 }
-
-
-// ============================================================================
-// HELPER FUNCTIONS
-// ============================================================================
-
-/**
- * Send a JSON response and stop execution.
- *
- * @param array $data        Must include a 'success' key.
- * @param int   $statusCode  HTTP status code (default 200).
- */
-function sendResponse(array $data, int $statusCode = 200): void
-{
-    // TODO: http_response_code($statusCode);
-      http_response_code($statusCode);
-    // TODO: echo json_encode($data, JSON_PRETTY_PRINT);
-     echo json_encode($data, JSON_PRETTY_PRINT);
-    // TODO: exit;
-    exit;
-}
-
 
 /**
  * Validate a date string against the "YYYY-MM-DD" format.
