@@ -30,15 +30,15 @@ async function loadWeeks() {
     const weeks = [
         {
             id: 1,
-            title: 'Week 1: HTML Basics',
-            start_date: '2026-05-21',
-            description: 'Introduction to HTML structure.'
+            title: 'Week 1: Introduction to HTML',
+            start_date: '2025-01-13',
+            description: 'Learn HTML fundamentals'
         },
         {
             id: 2,
             title: 'Week 2: CSS Basics',
-            start_date: '2026-05-28',
-            description: 'Learn CSS styling and layouts.'
+            start_date: '2025-01-20',
+            description: 'Learn CSS styling basics'
         }
     ];
 
