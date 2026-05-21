@@ -506,12 +506,26 @@ if (!$existingWeek) {
     //       and the full new comment object.
     // Otherwise sendResponse HTTP 500.
     if ($stmt->rowCount() > 0) {
-        $newComment = ['id' => $db->lastInsertId(),'week_id' => $week_id, 'author' => $author, 'text' => $text];
-        sendResponse(['success' => true, 'data' => $newComment, 'message' => 'Comment created successfully'], 201);
-    } else {
-        sendResponse(['success' => false, 'message' => 'Failed to create comment'], 500);}
-}
+    $commentId = $db->lastInsertId();
 
+    $fetchStmt = $db->prepare("
+        SELECT id, week_id, author, text, created_at
+        FROM comments_week
+        WHERE id = ?
+    ");
+
+    $fetchStmt->execute([$commentId]);
+    $newComment = $fetchStmt->fetch(PDO::FETCH_ASSOC);
+
+    sendResponse([
+        'success' => true,
+        'data' => $newComment,
+        'message' => 'Comment created successfully'
+    ], 201);
+} else {
+    sendResponse(['success' => false, 'message' => 'Failed to create comment'], 500);
+}
+}
 /**
  * Delete a single comment.
  * Method: DELETE with ?action=delete_comment&comment_id={id}.
