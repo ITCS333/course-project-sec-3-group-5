@@ -518,29 +518,28 @@ function deleteComment(PDO $db, $commentId): void
         ], 400);
         return;
     }
+    $commentId = (int)$commentId;
 
     // TODO: Check that the comment exists in comments_week.
     // If not, sendResponse HTTP 404.
     $checkStmt = $db->prepare("SELECT id FROM comments_week WHERE id = ?");
     $checkStmt->execute([$commentId]);
      
-    if (!$checkStmt->fetch()) {
+    if (!$checkStmt->fetch(PDO::FETCH_ASSOC)) {
         sendResponse(['success' => false, 'message' => 'Comment not found'], 404);
         return;
     }
 
     // TODO: DELETE FROM comments_week WHERE id = ?
     $stmt = $db->prepare("DELETE FROM comments_week WHERE id = ?");
-   
+   $stmt->execute([$commentId]);
 
     // TODO: If rowCount() > 0, sendResponse HTTP 200.
     // Otherwise sendResponse HTTP 500.
-    $stmt->execute([$commentId]);
-
  if ($stmt->rowCount() > 0) {
-        sendResponse(['success' => true, 'message' => 'Week deleted successfully'], 200);
+        sendResponse(['success' => true, 'message' => 'Comment deleted successfully'], 200);
     } else {
-        sendResponse(['success' => false, 'message' => 'Failed to delete week'], 500);}
+        sendResponse(['success' => false, 'message' => 'Failed to delete comment'], 500);}
 
 }
 
